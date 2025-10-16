@@ -5,15 +5,16 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 
 export const analyzeProperties = async (propertyIds) => {
   try {
-    const response = await api.post('/analyze', { property_ids: propertyIds });
+    const response = await api.post(
+      '/analyze',
+      { property_ids: propertyIds },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
     return response.data;
   } catch (error) {
     console.error('Error analyzing properties:', error);
