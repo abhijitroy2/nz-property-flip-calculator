@@ -1,20 +1,132 @@
-from fastapi import FastAPI, UploadFile, File, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi import FastAPI, UploadFile, File, Request, HTTPException
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
 import csv, io
 from datetime import datetime, date, timedelta
 import os
 import re
 import time
+import asyncio
+from typing import List, Dict, Any
 
-app = FastAPI(title="CSV Preview App")
+app = FastAPI(title="NZ Property Flip Calculator", version="1.0.0")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, specify your frontend domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+# Import pipeline functions
+from .pipeline import process_addresses, process_addresses_with_urls
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for Railway"""
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
+# API Routes for React frontend
+@app.post("/api/upload")
+async def upload_csv(file: UploadFile = File(...)):
+    """Upload and process CSV file with property data"""
+    if not file.filename.lower().endswith((".csv", ".txt")):
+        raise HTTPException(status_code=400, detail="Only CSV or TXT files supported")
+
+    content = await file.read()
+    try:
+        buf = io.StringIO(content.decode("utf-8", errors="ignore"))
+        reader = csv.reader(buf)
+        rows = list(reader)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to parse CSV: {str(e)}")
+
+    if not rows:
+        return {"properties": [], "message": "No data found in file"}
+
+    headers = [h.strip() for h in rows[0]]
+    properties = []
+    
+    # Process each row as a property
+    for row in rows[1:]:
+        if len(row) < len(headers):
+            row.extend([''] * (len(headers) - len(row)))
+        
+        property_data = dict(zip(headers, row))
+        properties.append(property_data)
+    
+    return {"properties": properties, "total": len(properties)}
+
+@app.post("/api/analyze")
+async def analyze_properties(request: Dict[str, Any]):
+    """Analyze properties for flip potential"""
+    property_ids = request.get("property_ids", [])
+    properties = request.get("properties", [])
+    
+    if not properties:
+        raise HTTPException(status_code=400, detail="No properties provided")
+    
+    try:
+        # Convert properties to address format for pipeline
+        addresses = []
+        for prop in properties:
+            if isinstance(prop, dict):
+                address_data = {
+                    "address": prop.get("address", prop.get("propertyaddress", "")),
+                    "trademe_url": prop.get("trademe_url", prop.get("trademeurl", ""))
+                }
+                if address_data["address"]:
+                    addresses.append(address_data)
+            elif isinstance(prop, str):
+                addresses.append({"address": prop, "trademe_url": ""})
+        
+        if not addresses:
+            raise HTTPException(status_code=400, detail="No valid addresses found")
+        
+        # Process addresses through pipeline
+        results = await process_addresses_with_urls(addresses)
+        
+        # Format results for frontend
+        analysis_results = []
+        for result in results:
+            analysis_results.append({
+                "address": result.address,
+                "score": result.score,
+                "notes": result.notes,
+                "scoring_breakdown": result.scoring_breakdown.dict() if result.scoring_breakdown else None,
+                "connection_data": result.connection_data.dict() if result.connection_data else None
+            })
+        
+        return {"results": analysis_results, "total": len(analysis_results)}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+
+@app.get("/api/property/{property_id}")
+async def get_property(property_id: str):
+    """Get individual property details"""
+    # This would typically fetch from database
+    # For now, return a placeholder
+    return {"id": property_id, "message": "Property endpoint not yet implemented"}
+
+@app.get("/api/analysis/{property_id}")
+async def get_analysis(property_id: str):
+    """Get analysis results for a property"""
+    # This would typically fetch from database
+    # For now, return a placeholder
+    return {"id": property_id, "message": "Analysis endpoint not yet implemented"}
 
 @app.post("/preview")
 async def preview(file: UploadFile = File(...)):

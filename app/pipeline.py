@@ -70,7 +70,7 @@ async def process_addresses_with_urls(addresses: List[Dict[str, str]]) -> List[A
             
             # Create connection data with scraper data
             connection_data = ConnectionData(
-                property_valuation = {
+                property_valuation={
                     "current_valuation": dp.current_valuation_mid,
                     "last_sale_price": dp.last_sale_price,
                     "source": dp.valuation_source,

@@ -1,6 +1,7 @@
 {
   "build": {
-    "builder": "DOCKERFILE"
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile.frontend"
   },
   "deploy": {
     "healthcheckPath": "/health",

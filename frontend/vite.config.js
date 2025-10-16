@@ -17,6 +17,8 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
+    // Ensure proper base path for deployment
+    assetsInlineLimit: 0,
   },
   preview: {
     port: 3000,
@@ -25,4 +27,6 @@ export default defineConfig({
   define: {
     global: 'globalThis',
   },
+  // Ensure proper base path for Railway deployment
+  base: '/',
 })
