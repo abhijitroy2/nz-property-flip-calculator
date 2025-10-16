@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RealFlip Scoring Analysis - 3/17 Barneys Farm Road, Clendon Park, Manukau City</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header .timestamp {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .score-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .score-summary .final-score {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .score-summary .score-label {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .section {
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .section-header {
+            background: #34495e;
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        .section-content {
+            padding: 20px;
+        }
+        .variable-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .variable-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        .variable-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .variable-value {
+            font-size: 1.1em;
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .variable-description {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        .calculation-step {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .calculation-step .step-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 8px;
+        }
+        .calculation-step .step-formula {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 3px;
+            margin: 5px 0;
+        }
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #e74c3c;
+        }
+        .breakdown-item .criteria {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .breakdown-item .score {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        .notes {
+            background: #e8f4f8;
+            border: 1px solid #bee5eb;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .notes h3 {
+            color: #0c5460;
+            margin-top: 0;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 RealFlip Scoring Analysis</h1>
+            <div class="timestamp">Generated on 2025-10-14 17:14:03</div>
+        </div>
+        
+        <div class="score-summary">
+            <div class="final-score">0.0/10.0</div>
+            <div class="score-label">Overall Viability Score</div>
+            <div style="margin-top: 15px; font-size: 1.1em;">Property: 3/17 Barneys Farm Road, Clendon Park, Manukau City</div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">📊 Input Variables & Data Points</div>
+            <div class="section-content">
+                <div class="variable-grid">
+                    <div class="variable-item">
+                        <div class="variable-name">Purchase Price</div>
+                        <div class="variable-value">N/A</div>
+                        <div class="variable-description">Estimated purchase price of the property</div>
+                    </div>
+                    <div class="variable-item">
+                        <div class="variable-name">Rehab Cost</div>
+                        <div class="variable-value">N/A</div>
+                        <div class="variable-description">Estimated renovation/repair costs</div>
+                    </div>
+                    <div class="variable-item">
+                        <div class="variable-name">After Repair Value (ARV)</div>
+                        <div class="variable-value">N/A</div>
+                        <div class="variable-description">Estimated value after renovations</div>
+                    </div>
+                    <div class="variable-item">
+                        <div class="variable-name">Days on Market</div>
+                        <div class="variable-value">N/A</div>
+                        <div class="variable-description">Average days properties stay on market</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">🧮 Profit Margin Calculation (60% of total score)</div>
+            <div class="section-content">
+                <div class="calculation-step">
+                    <div class="step-title">Step 1: Calculate Total Investment</div>
+                    <div class="step-formula">Total Cost = Purchase Price + Rehab Cost</div>
+                    <div class="step-formula">Total Cost = N/A + N/A = N/A</div>
+                </div>
+                
+                <div class="calculation-step">
+                    <div class="step-title">Step 2: Calculate Net Sale Proceeds</div>
+                    <div class="step-formula">Net Sale = ARV × (1 - Transaction Costs)</div>
+                    <div class="step-formula">Net Sale = N/A × 0.94 = N/A</div>
+                    <div class="variable-description">Transaction costs in NZ are typically 6% (legal, agent fees, etc.)</div>
+                </div>
+                
+                <div class="calculation-step">
+                    <div class="step-title">Step 3: Calculate Profit</div>
+                    <div class="step-formula">Profit = Net Sale - Total Cost</div>
+                    <div class="step-formula">Profit = N/A - N/A = N/A</div>
+                </div>
+                
+                <div class="calculation-step">
+                    <div class="step-title">Step 4: Calculate Profit Margin</div>
+                    <div class="step-formula">Margin Ratio = Profit ÷ Total Cost</div>
+                    <div class="step-formula">Margin Ratio = N/A ÷ N/A = N/A</div>
+                </div>
+                
+                <div class="calculation-step">
+                    <div class="step-title">Step 5: Score Assignment</div>
+                    <div class="step-formula">If margin ≥ 20%: Full 6.0 points</div>
+                    <div class="step-formula">If margin < 20%: Proportional scoring (6.0 × margin ÷ 0.20)</div>
+                    <div class="step-formula">Score = N/A points</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">📈 Scoring Breakdown by Criteria</div>
+            <div class="section-content">
+                <div class="breakdown-item">
+                    <div class="criteria">💰 Profit Margin</div>
+                    <div class="score">N/A/6.0</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="criteria">⏱️ Days on Market</div>
+                    <div class="score">N/A/1.5</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">📝 Detailed Scoring Logic</div>
+            <div class="section-content">
+                <div class="calculation-step">
+                    <div class="step-title">Days on Market Scoring</div>
+                    <div class="step-formula">≤ 15 days: 1.5 points (fast market)</div>
+                    <div class="step-formula">15-90 days: Linear scaling</div>
+                    <div class="step-formula">≥ 90 days: 0 points (slow market)</div>
+                    <div class="variable-description">Missing days on market data</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="notes">
+            <h3>📋 Analysis Notes</h3>
+            <p><strong>Overall Assessment:</strong> Missing price/rehab/ARV; Missing DOM</p>
+            <p><strong>Key Insights:</strong></p>
+            <ul>
+                <li>Profit margin of <span class="highlight">N/A</span> is below the 20% threshold for optimal returns</li>
+                <li>Total investment required: <span class="highlight">N/A</span></li>
+                <li>Expected profit: <span class="highlight">N/A</span></li>
+                <li>This property does not meet the criteria for a high-viability flip (≥7.0 score)</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+    

@@ -1,0 +1,329 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RealFlip Scoring Analysis - 39 Canal Road, Avondale, Auckland City</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header .timestamp {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .score-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .score-summary .final-score {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .score-summary .score-label {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .section {
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .section-header {
+            background: #34495e;
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        .section-content {
+            padding: 20px;
+        }
+        .variable-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .variable-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        .variable-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .variable-value {
+            font-size: 1.1em;
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .variable-description {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        .calculation-step {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .calculation-step .step-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 8px;
+        }
+        .calculation-step .step-formula {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 3px;
+            margin: 5px 0;
+        }
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #e74c3c;
+        }
+        .breakdown-item .criteria {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .breakdown-item .score {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        .notes {
+            background: #e8f4f8;
+            border: 1px solid #bee5eb;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .notes h3 {
+            color: #0c5460;
+            margin-top: 0;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 RealFlip Scoring Analysis</h1>
+            <div class="timestamp">Generated on 2025-10-14 15:59:00</div>
+        </div>
+        
+        <div class="score-summary">
+            <div class="final-score">6.4/10.0</div>
+            <div class="score-label">Overall Viability Score</div>
+            <div style="margin-top: 15px; font-size: 1.1em;">Property: 39 Canal Road, Avondale, Auckland City</div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">📊 Input Variables & Data Points</div>
+            <div class="section-content">
+                <div class="variable-grid">
+                    <div class="variable-item">
+                        <div class="variable-name">Purchase Price</div>
+                        <div class="variable-value">$1,613,274</div>
+                        <div class="variable-description">Estimated purchase price of the property</div>
+                    </div>
+                    <div class="variable-item">
+                        <div class="variable-name">Rehab Cost</div>
+                        <div class="variable-value">$123,735</div>
+                        <div class="variable-description">Estimated renovation/repair costs</div>
+                    </div>
+                    <div class="variable-item">
+                        <div class="variable-name">After Repair Value (ARV)</div>
+                        <div class="variable-value">$2,072,708</div>
+                        <div class="variable-description">Estimated value after renovations</div>
+                    </div>
+                    <div class="variable-item">
+                        <div class="variable-name">Crime Index</div>
+                        <div class="variable-value">45.2</div>
+                        <div class="variable-description">NZ Police crime index (0-100, lower is safer)</div>
+                    </div>
+                    <div class="variable-item">
+                        <div class="variable-name">School Rating</div>
+                        <div class="variable-value">7.2</div>
+                        <div class="variable-description">Ministry of Education decile rating (1-10)</div>
+                    </div>
+                    <div class="variable-item">
+                        <div class="variable-name">Days on Market</div>
+                        <div class="variable-value">44</div>
+                        <div class="variable-description">Average days properties stay on market</div>
+                    </div>
+                    <div class="variable-item">
+                        <div class="variable-name">Comparable Sales</div>
+                        <div class="variable-value">20</div>
+                        <div class="variable-description">Number of comparable properties sold</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">🧮 Profit Margin Calculation (60% of total score)</div>
+            <div class="section-content">
+                <div class="calculation-step">
+                    <div class="step-title">Step 1: Calculate Total Investment</div>
+                    <div class="step-formula">Total Cost = Purchase Price + Rehab Cost</div>
+                    <div class="step-formula">Total Cost = $1,613,274 + $123,735 = $1,737,009</div>
+                </div>
+                
+                <div class="calculation-step">
+                    <div class="step-title">Step 2: Calculate Net Sale Proceeds</div>
+                    <div class="step-formula">Net Sale = ARV × (1 - Transaction Costs)</div>
+                    <div class="step-formula">Net Sale = $2,072,708 × 0.94 = $1,948,346</div>
+                    <div class="variable-description">Transaction costs in NZ are typically 6% (legal, agent fees, etc.)</div>
+                </div>
+                
+                <div class="calculation-step">
+                    <div class="step-title">Step 3: Calculate Profit</div>
+                    <div class="step-formula">Profit = Net Sale - Total Cost</div>
+                    <div class="step-formula">Profit = $1,948,346 - $1,737,009 = $211,337</div>
+                </div>
+                
+                <div class="calculation-step">
+                    <div class="step-title">Step 4: Calculate Profit Margin</div>
+                    <div class="step-formula">Margin Ratio = Profit ÷ Total Cost</div>
+                    <div class="step-formula">Margin Ratio = $211,337 ÷ $1,737,009 = 12.2%</div>
+                </div>
+                
+                <div class="calculation-step">
+                    <div class="step-title">Step 5: Score Assignment</div>
+                    <div class="step-formula">If margin ≥ 20%: Full 6.0 points</div>
+                    <div class="step-formula">If margin < 20%: Proportional scoring (6.0 × margin ÷ 0.20)</div>
+                    <div class="step-formula">Score = 3.7 points</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">📈 Scoring Breakdown by Criteria</div>
+            <div class="section-content">
+                <div class="breakdown-item">
+                    <div class="criteria">💰 Profit Margin (60% weight)</div>
+                    <div class="score">3.7/6.0</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="criteria">⏱️ Days on Market (15% weight)</div>
+                    <div class="score">0.9/1.5</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="criteria">🚨 Crime Index (10% weight)</div>
+                    <div class="score">0.5/1.0</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="criteria">🏫 School Rating (10% weight)</div>
+                    <div class="score">0.8/1.0</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="criteria">📊 Comparable Sales (5% weight)</div>
+                    <div class="score">0.5/0.5</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">📝 Detailed Scoring Logic</div>
+            <div class="section-content">
+                <div class="calculation-step">
+                    <div class="step-title">Days on Market Scoring</div>
+                    <div class="step-formula">≤ 15 days: 1.5 points (fast market)</div>
+                    <div class="step-formula">15-90 days: Linear scaling</div>
+                    <div class="step-formula">≥ 90 days: 0 points (slow market)</div>
+                    <div class="variable-description">Days on market: 44 days (NZ market threshold: 15-90 days)</div>
+                </div>
+                
+                <div class="calculation-step">
+                    <div class="step-title">Crime Index Scoring</div>
+                    <div class="step-formula">≤ 20: 1.0 point (very safe)</div>
+                    <div class="step-formula">21-40: 0.8 points (safe)</div>
+                    <div class="step-formula">41-60: 0.5 points (average)</div>
+                    <div class="step-formula">> 60: 0.2 points (higher crime)</div>
+                    <div class="variable-description">Crime index: 45/100 (NZ Police data, lower is safer)</div>
+                </div>
+                
+                <div class="calculation-step">
+                    <div class="step-title">School Rating Scoring</div>
+                    <div class="step-formula">Decile 8-10: 1.0 point (high socio-economic)</div>
+                    <div class="step-formula">Decile 6-7: 0.8 points (above average)</div>
+                    <div class="step-formula">Decile 4-5: 0.5 points (average)</div>
+                    <div class="step-formula">Decile 1-3: 0.3 points (lower decile)</div>
+                    <div class="variable-description">School decile: 7.2/10 (Ministry of Education, 10 is highest socio-economic)</div>
+                </div>
+                
+                <div class="calculation-step">
+                    <div class="step-title">Comparable Sales Scoring</div>
+                    <div class="step-formula">≥ 12 comps: 0.5 points (high confidence)</div>
+                    <div class="step-formula">4-11 comps: Linear scaling</div>
+                    <div class="step-formula">≤ 3 comps: 0.1 points (low confidence)</div>
+                    <div class="variable-description">Comparable sales: 20 properties (more comps = higher confidence)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="notes">
+            <h3>📋 Analysis Notes</h3>
+            <p><strong>Overall Assessment:</strong> Margin 12.2% -> 3.7; DOM 44 -> 0.9; Crime 45 -> 0.5; Schools 7.2 -> 0.8; Comps 20 -> 0.5</p>
+            <p><strong>Key Insights:</strong></p>
+            <ul>
+                <li>Profit margin of <span class="highlight">12.2%</span> is below the 20% threshold for optimal returns</li>
+                <li>Total investment required: <span class="highlight">$1,737,009</span></li>
+                <li>Expected profit: <span class="highlight">$211,337</span></li>
+                <li>This property does not meet the criteria for a high-viability flip (≥7.0 score)</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+    

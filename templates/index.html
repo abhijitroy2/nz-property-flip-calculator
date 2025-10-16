@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flip Potential</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <style>
+    .results-container {
+      margin-top: 2rem;
+    }
+    
+    .table-container {
+      margin-top: 1rem;
+    }
+    
+    .table-wrapper {
+      height: 70vh;
+      border: 1px solid var(--pico-color-slate-300);
+      border-radius: 0.5rem;
+      overflow: auto; /* both scrollbars */
+      box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    }
+    
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    
+    .results-table th {
+      background-color: var(--pico-color-slate-100);
+      padding: 0.75rem 0.5rem;
+      text-align: left;
+      border: 1px solid var(--pico-color-slate-300);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    
+    .results-table td {
+      padding: 0.75rem 0.5rem;
+      border: 1px solid var(--pico-color-slate-300);
+      vertical-align: top;
+      white-space: nowrap; /* horizontal scroll instead of wrap */
+    }
+    
+    .address-cell {
+      max-width: 200px;
+      word-wrap: break-word;
+    }
+    
+    .score-cell {
+      text-align: center;
+      min-width: 80px;
+    }
+    
+    .score-value {
+      font-weight: bold;
+      font-size: 1.1rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+    }
+    
+    .score-value.excellent {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    
+    .score-value.good {
+      background-color: #d1ecf1;
+      color: #0c5460;
+    }
+    
+    .score-value.fair {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+    
+    .score-value.poor {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    
+    .connection-cell {
+      min-width: 120px;
+    }
+    
+    .valuation-cell {
+      min-width: 140px;
+    }
+    
+    .connection-info {
+      text-align: center;
+    }
+    
+    .connection-status {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-bottom: 0.25rem;
+    }
+    
+    .connection-status.success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    
+    .connection-status.error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    
+    .connection-status.unknown {
+      background-color: #e2e3e5;
+      color: #383d41;
+    }
+    
+    .connection-detail {
+      font-size: 0.8rem;
+      color: var(--pico-color-slate-600);
+    }
+    
+    .valuation-info {
+      text-align: center;
+    }
+    
+    .valuation-detail {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: var(--pico-color-green-700);
+      margin: 0.25rem 0;
+    }
+    
+    .valuation-source {
+      font-size: 0.7rem;
+      color: var(--pico-color-slate-500);
+      font-style: italic;
+    }
+    
+    .scoring-cell {
+      min-width: 200px;
+    }
+    
+    .scoring-breakdown {
+      font-size: 0.8rem;
+    }
+    
+    .score-item {
+      margin-bottom: 0.25rem;
+      padding: 0.25rem;
+      background-color: var(--pico-color-slate-50);
+      border-radius: 0.25rem;
+    }
+    
+    .score-item strong {
+      color: var(--pico-color-slate-700);
+    }
+    
+    .no-data {
+      color: var(--pico-color-slate-500);
+      font-style: italic;
+    }
+    
+    .csv-format-info {
+      margin-top: 1rem;
+      padding: 1rem;
+      background-color: var(--pico-color-slate-50);
+      border-radius: 0.5rem;
+      border: 1px solid var(--pico-color-slate-200);
+    }
+    
+    .csv-format-info h3 {
+      margin-top: 0;
+      color: var(--pico-color-slate-700);
+    }
+    
+    .csv-format-info p {
+      margin: 0.5rem 0;
+    }
+    
+    .csv-format-info code {
+      background-color: var(--pico-color-slate-100);
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.9rem;
+      word-break: break-all;
+    }
+    
+    @media (max-width: 768px) {
+      .results-table {
+        font-size: 0.8rem;
+      }
+      
+      .results-table th,
+      .results-table td {
+        padding: 0.5rem 0.25rem;
+      }
+    }
+    
+    /* Resizable column handle */
+    th.resizable {
+      position: sticky;
+    }
+    .col-resizer {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 6px;
+      height: 100%;
+      cursor: col-resize;
+      user-select: none;
+      background: transparent;
+    }
+    .col-resizer:hover {
+      background: rgba(0,0,0,0.08);
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Flip Potential</h1>
+    <form id="upload-form">
+      <label for="file">Upload CSV (any headers). We'll calculate flip indicators.</label>
+      <input type="file" id="file" name="file" accept=".csv,.txt" required />
+      <button type="submit">Calculate</button>
+    </form>
+    <div id="results" style="margin-top: 1rem;"></div>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>
