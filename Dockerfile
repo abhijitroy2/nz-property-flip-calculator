@@ -19,4 +19,4 @@ COPY backend/ .
 EXPOSE $PORT
 
 # Run the application with gunicorn
-CMD gunicorn --bind 0.0.0.0:$PORT --workers 2 --callable app app:create_app
+CMD gunicorn --bind 0.0.0.0:$PORT --workers 2 app:create_app
