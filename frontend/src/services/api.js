@@ -26,11 +26,8 @@ export const uploadCSV = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
     
-    const response = await api.post('/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    // Don't set Content-Type manually - let axios handle it with proper boundary
+    const response = await api.post('/upload', formData);
     
     return response.data;
   } catch (error) {

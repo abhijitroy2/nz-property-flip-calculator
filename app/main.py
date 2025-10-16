@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Request, HTTPException
+from fastapi import FastAPI, UploadFile, File, Request, HTTPException, Form
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -10,6 +10,7 @@ import re
 import time
 import asyncio
 from typing import List, Dict, Any
+import logging
 
 app = FastAPI(title="NZ Property Flip Calculator", version="1.0.0")
 
@@ -42,32 +43,63 @@ async def health_check():
 @app.post("/api/upload")
 async def upload_csv(file: UploadFile = File(...)):
     """Upload and process CSV file with property data"""
-    if not file.filename.lower().endswith((".csv", ".txt")):
-        raise HTTPException(status_code=400, detail="Only CSV or TXT files supported")
-
-    content = await file.read()
     try:
-        buf = io.StringIO(content.decode("utf-8", errors="ignore"))
-        reader = csv.reader(buf)
-        rows = list(reader)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Failed to parse CSV: {str(e)}")
-
-    if not rows:
-        return {"properties": [], "message": "No data found in file"}
-
-    headers = [h.strip() for h in rows[0]]
-    properties = []
-    
-    # Process each row as a property
-    for row in rows[1:]:
-        if len(row) < len(headers):
-            row.extend([''] * (len(headers) - len(row)))
+        # Log the upload attempt
+        logging.info(f"Upload attempt: filename={file.filename}, content_type={file.content_type}")
         
-        property_data = dict(zip(headers, row))
-        properties.append(property_data)
-    
-    return {"properties": properties, "total": len(properties)}
+        # Check if file is provided
+        if not file.filename:
+            logging.error("No filename provided")
+            raise HTTPException(status_code=400, detail="No file provided")
+        
+        # Check file extension
+        if not file.filename.lower().endswith((".csv", ".txt")):
+            logging.error(f"Invalid file type: {file.filename}")
+            raise HTTPException(status_code=400, detail="Only CSV or TXT files supported")
+
+        # Read file content
+        content = await file.read()
+        logging.info(f"File size: {len(content)} bytes")
+        
+        if len(content) == 0:
+            raise HTTPException(status_code=400, detail="File is empty")
+        
+        # Parse CSV content
+        try:
+            buf = io.StringIO(content.decode("utf-8", errors="ignore"))
+            reader = csv.reader(buf)
+            rows = list(reader)
+        except Exception as e:
+            logging.error(f"CSV parsing error: {str(e)}")
+            raise HTTPException(status_code=400, detail=f"Failed to parse CSV: {str(e)}")
+
+        if not rows:
+            logging.warning("No data found in file")
+            return {"properties": [], "message": "No data found in file"}
+
+        headers = [h.strip() for h in rows[0]]
+        logging.info(f"CSV headers: {headers}")
+        
+        properties = []
+        
+        # Process each row as a property
+        for i, row in enumerate(rows[1:], 1):
+            if len(row) < len(headers):
+                row.extend([''] * (len(headers) - len(row)))
+            
+            property_data = dict(zip(headers, row))
+            properties.append(property_data)
+        
+        logging.info(f"Successfully processed {len(properties)} properties")
+        return {"properties": properties, "total": len(properties)}
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
+    except Exception as e:
+        # Log unexpected errors
+        logging.error(f"Unexpected error in upload: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 @app.post("/api/analyze")
 async def analyze_properties(request: Dict[str, Any]):
