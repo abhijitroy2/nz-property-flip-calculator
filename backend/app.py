@@ -7,8 +7,10 @@ import os
 
 def create_app():
     """Create and configure the Flask application"""
+    print("Creating Flask application...")
     app = Flask(__name__)
     app.config.from_object(Config)
+    print("Flask app created and configured")
     
     # Enable CORS for React frontend and production
     CORS(app, resources={
@@ -26,10 +28,14 @@ def create_app():
     app.register_blueprint(analyze_bp)
     app.register_blueprint(upload_bp)
     
-    # Create tables if they don't exist
+    # Create tables if they don't exist (with error handling)
     with app.app_context():
-        db.create_all()
-        print("Database tables created successfully")
+        try:
+            db.create_all()
+            print("Database tables created successfully")
+        except Exception as e:
+            print(f"Database connection failed: {e}")
+            print("App will continue without database initialization")
     
     @app.route('/')
     def index():
