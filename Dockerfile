@@ -16,7 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ .
 
 # Expose port (Railway will provide PORT env var)
-EXPOSE $PORT
+EXPOSE 5000
 
 # Run the application with gunicorn
-CMD gunicorn --bind 0.0.0.0:$PORT --workers 2 app:create_app
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT --workers 2 app:create_app"]
