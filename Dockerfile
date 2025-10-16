@@ -19,4 +19,4 @@ COPY backend/ .
 EXPOSE 5000
 
 # Run the application with gunicorn
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT --workers 2 app:create_app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT --workers 2 app:app"]
