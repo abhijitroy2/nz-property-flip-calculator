@@ -196,6 +196,15 @@ async def analyze_properties(request: Dict[str, Any]):
         # Process addresses through pipeline
         results = await process_addresses_with_urls(addresses)
         
+        # Import the financial calculator
+        import sys
+        import os
+        sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'backend'))
+        from calculator import PropertyFlipCalculator
+        
+        # Initialize calculator
+        calculator = PropertyFlipCalculator()
+        
         # Format results for frontend - match with original properties
         analysis_results = []
         for i, result in enumerate(results):
@@ -210,7 +219,94 @@ async def analyze_properties(request: Dict[str, Any]):
             if not matching_property and i < len(properties):
                 matching_property = properties[i]
             
-            # Create analysis result in the format expected by frontend
+            # Extract financial data from the analysis result
+            connection_data = result.connection_data.dict() if result.connection_data else {}
+            property_valuation = connection_data.get('property_valuation', {})
+            
+            # Get property values for financial calculations
+            asking_price = matching_property.get('asking_price', 0) if matching_property else 0
+            if isinstance(asking_price, str):
+                asking_price = asking_price.replace('$', '').replace(',', '').replace('Asking ', '').strip()
+                try:
+                    asking_price = float(asking_price) if asking_price else 0
+                except:
+                    asking_price = 0
+            
+            # Use current valuation as target value, fallback to asking price
+            target_value = property_valuation.get('current_valuation', asking_price * 1.1)
+            if not target_value:
+                target_value = asking_price * 1.1
+            
+            # Use 85% of asking price as purchase price
+            purchase_price = asking_price * 0.85 if asking_price > 0 else 0
+            
+            # Perform financial calculations
+            try:
+                calc_result = calculator.calculate(
+                    pp=purchase_price,
+                    tv=target_value,
+                    rv=property_valuation.get('current_valuation'),
+                    cv=property_valuation.get('current_valuation')
+                )
+                
+                # Create analysis result with financial data
+                analysis_data = {
+                    "score": result.score,
+                    "notes": result.notes,
+                    "scoring_breakdown": result.scoring_breakdown.dict() if result.scoring_breakdown else None,
+                    "connection_data": result.connection_data.dict() if result.connection_data else None,
+                    # Financial calculation fields
+                    "purchase_price": calc_result.get('pp', 0),
+                    "rateable_value": calc_result.get('rv', 0),
+                    "capital_value": calc_result.get('cv', 0),
+                    "target_value": calc_result.get('tv', 0),
+                    "renovation_budget": calc_result.get('rb', 0),
+                    "insurance": calc_result.get('ins', 0),
+                    "legal_expenses": calc_result.get('le', 0),
+                    "council_rates": calc_result.get('cr', 0),
+                    "commission": calc_result.get('com', 0),
+                    "interest_cost": calc_result.get('int', 0),
+                    "interest_rate": calc_result.get('int_rate', 0),
+                    "renovation_period": calc_result.get('renovation_months', 0),
+                    "gst_claimable": calc_result.get('gst_claimable', 0),
+                    "gst_payable": calc_result.get('gst_payable', 0),
+                    "net_gst": calc_result.get('net_gst', 0),
+                    "gross_profit": calc_result.get('gross_profit', 0),
+                    "pre_tax_profit": calc_result.get('pre_tax_profit', 0),
+                    "post_tax_profit": calc_result.get('post_tax_profit', 0),
+                    "recommended_pp": calc_result.get('recommended_pp', 0),
+                    "is_viable": calc_result.get('is_viable', False)
+                }
+            except Exception as e:
+                logging.error(f"Financial calculation error for {result.address}: {e}")
+                # Fallback to basic analysis without financial data
+                analysis_data = {
+                    "score": result.score,
+                    "notes": result.notes,
+                    "scoring_breakdown": result.scoring_breakdown.dict() if result.scoring_breakdown else None,
+                    "connection_data": result.connection_data.dict() if result.connection_data else None,
+                    "purchase_price": 0,
+                    "rateable_value": 0,
+                    "capital_value": 0,
+                    "target_value": 0,
+                    "renovation_budget": 0,
+                    "insurance": 0,
+                    "legal_expenses": 0,
+                    "council_rates": 0,
+                    "commission": 0,
+                    "interest_cost": 0,
+                    "interest_rate": 0,
+                    "renovation_period": 0,
+                    "gst_claimable": 0,
+                    "gst_payable": 0,
+                    "net_gst": 0,
+                    "gross_profit": 0,
+                    "pre_tax_profit": 0,
+                    "post_tax_profit": 0,
+                    "recommended_pp": 0,
+                    "is_viable": False
+                }
+            
             analysis_results.append({
                 "property": matching_property or {
                     "id": i + 1,
@@ -223,12 +319,7 @@ async def analyze_properties(request: Dict[str, Any]):
                     "sale_method": "",
                     "trademe_url": ""
                 },
-                "analysis": {
-                    "score": result.score,
-                    "notes": result.notes,
-                    "scoring_breakdown": result.scoring_breakdown.dict() if result.scoring_breakdown else None,
-                    "connection_data": result.connection_data.dict() if result.connection_data else None
-                },
+                "analysis": analysis_data,
                 "valuation": {
                     "source": "analysis",
                     "score": result.score
