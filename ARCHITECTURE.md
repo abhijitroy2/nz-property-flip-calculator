@@ -28,7 +28,7 @@
                             │ REST API
                             │
 ┌───────────────────────────▼─────────────────────────────────────┐
-│                     FLASK BACKEND                                │
+│                     FASTAPI BACKEND                              │
 │                   http://localhost:5000                          │
 │                                                                  │
 │  ┌──────────────────────────────────────────────────────────┐  │
@@ -142,7 +142,7 @@ SearchForm Component
     │
     │ POST /api/search
     ▼
-Flask Search Route
+FastAPI Search Route
     │
     ├─ Check Cache (7 days)
     │   └─ Cache Hit? → Return cached
@@ -185,7 +185,7 @@ Analyze Button Clicked
     │
     │ POST /api/analyze
     ▼
-Flask Analyze Route
+FastAPI Analyze Route
     │
     ▼
 For Each Property (Sequential):
@@ -259,7 +259,7 @@ CSVUpload Component
     │
     │ POST /api/upload (multipart/form-data)
     ▼
-Flask Upload Route
+FastAPI Upload Route
     │
     ▼
 CSV Parser
@@ -337,7 +337,7 @@ Return Data
 │  ├─ CORS: localhost only                            │
 │  └─ No sensitive data storage                       │
 │                                                      │
-│  Backend (Flask)                                     │
+│  Backend (FastAPI)                                   │
 │  ├─ SQL Injection Protection (SQLAlchemy ORM)       │
 │  ├─ Input validation on all endpoints               │
 │  ├─ CORS whitelist (localhost:3000, 5173)           │
@@ -372,7 +372,7 @@ Return Data
 │         Developer Machine             │
 │                                       │
 │  ┌─────────────┐  ┌───────────────┐ │
-│  │   React     │  │    Flask      │ │
+│  │   React     │  │    FastAPI    │ │
 │  │   :3000     │  │    :5000      │ │
 │  └─────────────┘  └───────────────┘ │
 │         │                │           │
@@ -427,7 +427,7 @@ Return Data
             ┌──────────────┴──────────────┐
             │                             │
     ┌───────▼────────┐          ┌────────▼────────┐
-    │  React Build   │          │  Flask (Gunicorn)│
+    │  React Build   │          │  FastAPI (Uvicorn)│
     │  (Static)      │          │  Systemd Service │
     │                │          │  :5000           │
     └────────────────┘          └────────┬─────────┘
@@ -480,7 +480,7 @@ Cache effectiveness:     70-90%   (7-day expiry)
 ```
 Backend:
 ├─ Python 3.8+
-├─ Flask 3.0.0
+├─ FastAPI 0.104+
 ├─ SQLAlchemy (ORM)
 ├─ PostgreSQL driver
 ├─ BeautifulSoup4 (HTML parsing)

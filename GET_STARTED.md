@@ -39,9 +39,8 @@ Follow the prompts and enter your PostgreSQL password when asked.
 
 **Terminal 1 - Backend:**
 ```cmd
-cd backend
-venv\Scripts\activate
-python run.py
+cd app
+python main.py
 ```
 
 **Terminal 2 - Frontend:**

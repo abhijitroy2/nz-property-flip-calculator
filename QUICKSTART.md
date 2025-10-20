@@ -123,9 +123,10 @@ Address,TradeMe URL,Bedrooms,Price
 
 If port 5000 or 3000 is in use:
 
-Backend - Edit `backend/app.py`, change:
+Backend - Edit `app/main.py`, change:
 ```python
-app.run(debug=True, host='0.0.0.0', port=5001)  # Changed to 5001
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=5001)  # Changed to 5001
 ```
 
 Frontend - Edit `frontend/vite.config.js`, change:

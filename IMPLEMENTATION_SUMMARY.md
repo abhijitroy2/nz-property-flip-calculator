@@ -9,7 +9,7 @@ This document summarizes the complete implementation of the NZ Property Flip Cal
 A full-stack web application for analyzing New Zealand property flipping opportunities with:
 
 1. **React Frontend** - Modern, responsive UI with Material-UI
-2. **Flask Backend** - RESTful API with web scraping capabilities
+2. **FastAPI Backend** - RESTful API with web scraping capabilities
 3. **PostgreSQL Database** - Persistent storage with intelligent caching
 4. **Web Scrapers** - Automated data collection from NZ property sites
 5. **Financial Calculator** - GST-aware profit calculations
@@ -22,7 +22,7 @@ A full-stack web application for analyzing New Zealand property flipping opportu
 |-----------|-----------|---------|
 | Frontend | React 18 + Vite | User interface |
 | UI Library | Material-UI 5 | Component library |
-| Backend | Flask 3.0 | REST API server |
+| Backend | FastAPI 0.104+ | REST API server |
 | Database | PostgreSQL 12+ | Data persistence |
 | Scraping | BeautifulSoup4 + Selenium | Web scraping |
 | API Client | Axios | HTTP requests |
@@ -31,7 +31,7 @@ A full-stack web application for analyzing New Zealand property flipping opportu
 
 ```
 ┌─────────────┐         ┌──────────────┐         ┌─────────────┐
-│   React     │ ──API──▶│    Flask     │ ──SQL──▶│ PostgreSQL  │
+│   React     │ ──API──▶│    FastAPI   │ ──SQL──▶│ PostgreSQL  │
 │  Frontend   │ ◀──JSON─│   Backend    │ ◀───────│  Database   │
 └─────────────┘         └──────────────┘         └─────────────┘
                               │

@@ -4,7 +4,15 @@
 
 ```
 realflip2/
-├── backend/                    # Flask API backend
+├── app/                        # FastAPI backend (main application)
+│   ├── providers/             # Web scraping modules
+│   ├── main.py                # FastAPI application
+│   ├── models.py              # Database models
+│   ├── pipeline.py            # Data processing pipeline
+│   ├── scoring.py             # Property scoring logic
+│   └── requirements.txt       # Python dependencies
+│
+├── backend/                    # Legacy Flask backend (alternative)
 │   ├── scrapers/              # Web scraping modules
 │   ├── routes/                # API endpoints
 │   ├── utils/                 # Utility functions
@@ -38,6 +46,20 @@ realflip2/
 ```
 
 ## Backend Structure
+
+### `/app/` (Main FastAPI Application)
+
+The primary backend implementation using FastAPI:
+
+- **`main.py`**: FastAPI application with all API endpoints
+- **`models.py`**: Database models and schemas
+- **`pipeline.py`**: Property analysis pipeline
+- **`scoring.py`**: Property scoring algorithms
+- **`providers/`**: Web scraping modules for different data sources
+
+### `/backend/` (Legacy Flask Implementation)
+
+Alternative Flask-based backend (kept for reference):
 
 ### `/backend/scrapers/`
 
@@ -78,6 +100,16 @@ Utility modules:
 - **`calculator.py`**: GST-aware profit calculations with tax considerations
 - **`config.py`**: Configuration from environment variables
 - **`app.py`**: Flask application factory with CORS and route registration
+
+### `/app/providers/` (FastAPI Scrapers)
+
+Modern scraping modules for the FastAPI backend:
+
+- **`base.py`**: Base scraper class with common functionality
+- **`trademe_scraper.py`**: TradeMe property data scraping
+- **`property_valuation.py`**: RV/CV valuation scraping
+- **`nz_comprehensive.py`**: Comprehensive NZ property data
+- **`concurrent_browser_manager.py`**: Browser automation management
 
 ## Frontend Structure
 

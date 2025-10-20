@@ -12,8 +12,8 @@ Your friend needs to install:
 
 #### 1. Backend Setup
 ```bash
-# Navigate to backend folder
-cd backend
+# Navigate to app folder
+cd app
 
 # Create virtual environment
 python -m venv venv
@@ -27,12 +27,8 @@ source venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Set up environment variables
-copy .env.example .env
-# Edit .env file with your database credentials
-
 # Run the backend
-python run.py
+python main.py
 ```
 
 #### 2. Frontend Setup

@@ -19,10 +19,11 @@ A comprehensive web application for analyzing New Zealand property flipping oppo
 
 ## Technology Stack
 
-- **Backend**: Python Flask with REST API
-- **Frontend**: React with Material-UI
+- **Backend**: Python FastAPI with REST API
+- **Frontend**: React 18 with Material-UI 5
 - **Database**: PostgreSQL
 - **Scraping**: BeautifulSoup4, Selenium with polite rate limiting
+- **Deployment**: Railway (live production instance available)
 
 ## Prerequisites
 
@@ -90,10 +91,12 @@ npm install
 
 ```bash
 cd backend
-python app.py
+python run.py
 
 # Backend will run on http://localhost:5000
 ```
+
+**Note**: The application is also deployed on Railway at: https://nz-property-flip-calculator-production.up.railway.app/
 
 ### Start Frontend Development Server
 
@@ -251,17 +254,17 @@ DATABASE_URL=postgresql://username:password@localhost:5432/nz_property_flip
 ### Frontend Not Connecting to Backend
 
 - Ensure backend is running on port 5000
-- Check CORS settings in `backend/app.py`
+- Check CORS settings in `app/main.py`
 - Verify proxy settings in `frontend/vite.config.js`
 
 ## Future Enhancements
 
-- Selenium integration for JavaScript-heavy sites
+- Enhanced Selenium integration for JavaScript-heavy sites
 - More insurance providers
 - Historical price trends
 - Export analysis reports to PDF
 - Android app deployment
-- Cloud hosting setup
+- Enhanced cloud hosting options
 
 ## License
 

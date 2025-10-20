@@ -1,8 +1,10 @@
 # Railway Deployment Guide
 
-## Deploying the NZ Property Flip Calculator
+## NZ Property Flip Calculator - Production Deployment
 
-This guide will help you deploy both the frontend and backend to Railway in a single service.
+**Current Status**: ✅ LIVE in production at https://nz-property-flip-calculator-production.up.railway.app/
+
+This guide documents the Railway deployment setup for the NZ Property Flip Calculator.
 
 ### Prerequisites
 
@@ -62,11 +64,11 @@ The deployed application uses:
 - **FastAPI** (port 5000): Backend API server
 - **React Frontend**: Built and served as static files
 
-### URL Structure
+### URL Structure (Production)
 
-- `https://your-app.railway.app/` - React frontend
-- `https://your-app.railway.app/api/` - Backend API
-- `https://your-app.railway.app/health` - Health check
+- `https://nz-property-flip-calculator-production.up.railway.app/` - React frontend
+- `https://nz-property-flip-calculator-production.up.railway.app/api/` - Backend API
+- `https://nz-property-flip-calculator-production.up.railway.app/health` - Health check
 
 ### Testing the Deployment
 
