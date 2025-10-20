@@ -96,9 +96,60 @@ async def upload_csv(file: UploadFile = File(...)):
             if len(row) < len(headers):
                 row.extend([''] * (len(headers) - len(row)))
             
-            property_data = dict(zip(headers, row))
+            # Create raw property data from CSV
+            raw_property_data = dict(zip(headers, row))
+            
+            # Extract suburb from address
+            full_address = raw_property_data.get('Property Address', raw_property_data.get('Address', ''))
+            suburb = ''
+            if full_address and ',' in full_address:
+                # Extract suburb (usually the part after the last comma)
+                address_parts = [part.strip() for part in full_address.split(',')]
+                if len(address_parts) >= 2:
+                    suburb = address_parts[-1]  # Last part is usually the city/suburb
+            
+            # Map CSV columns to expected property fields
+            property_data = {
+                'address': full_address,
+                'suburb': suburb,
+                'bedrooms': raw_property_data.get('Bedrooms', ''),
+                'bathrooms': raw_property_data.get('Bathrooms', ''),
+                'floor_area': raw_property_data.get('Area', '').replace(' m2', '').replace('m2', '').strip(),
+                'asking_price': raw_property_data.get('Price', '').replace('Asking $', '').replace('$', '').replace(',', '').strip(),
+                'sale_method': raw_property_data.get('Open Home Status', ''),
+                'trademe_url': raw_property_data.get('Property Link', raw_property_data.get('TradeMe URL', '')),
+                'id': i,  # Add ID for frontend
+                # Keep all original data for debugging
+                'raw_data': raw_property_data
+            }
+            
+            # Clean up numeric fields
+            try:
+                if property_data['bedrooms']:
+                    property_data['bedrooms'] = int(property_data['bedrooms'])
+            except (ValueError, TypeError):
+                property_data['bedrooms'] = None
+                
+            try:
+                if property_data['bathrooms']:
+                    property_data['bathrooms'] = int(property_data['bathrooms'])
+            except (ValueError, TypeError):
+                property_data['bathrooms'] = None
+                
+            try:
+                if property_data['floor_area']:
+                    property_data['floor_area'] = float(property_data['floor_area'])
+            except (ValueError, TypeError):
+                property_data['floor_area'] = None
+                
+            try:
+                if property_data['asking_price']:
+                    property_data['asking_price'] = float(property_data['asking_price'])
+            except (ValueError, TypeError):
+                property_data['asking_price'] = None
+            
             properties.append(property_data)
-            logging.debug(f"Processed row {i}: {property_data}")
+            logging.info(f"Processed row {i}: {property_data}")
         
         logging.info(f"Successfully processed {len(properties)} properties")
         return {
