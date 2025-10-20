@@ -197,134 +197,201 @@ async def analyze_properties(request: Dict[str, Any]):
         results = await process_addresses_with_urls(addresses)
         
         # Import the financial calculator
-        import sys
-        import os
-        sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'backend'))
-        from calculator import PropertyFlipCalculator
-        
-        # Initialize calculator
-        calculator = PropertyFlipCalculator()
+        try:
+            import sys
+            import os
+            
+            # Add backend directory to path
+            backend_path = os.path.join(os.path.dirname(__file__), '..', 'backend')
+            if backend_path not in sys.path:
+                sys.path.insert(0, backend_path)
+            
+            from calculator import PropertyFlipCalculator
+            from config import Config
+            
+            # Initialize calculator
+            calculator = PropertyFlipCalculator()
+        except ImportError as e:
+            logging.error(f"Failed to import financial calculator: {e}")
+            # Create a simple fallback calculator
+            class FallbackCalculator:
+                def calculate(self, pp, tv, rv=None, cv=None, ins=None, rb=None, le=None, cr=None, int_rate=None, renovation_months=None):
+                    # Simple fallback calculations
+                    ins = ins or 1800
+                    rb = rb or 100000
+                    le = le or 2500
+                    cr = cr or 2000
+                    int_rate = int_rate or 0.075
+                    renovation_months = renovation_months or 6
+                    
+                    com = tv * 0.018  # 1.8% commission
+                    int_cost = (pp + rb) * (int_rate / 12) * renovation_months
+                    
+                    gst_claimable = (pp + rb + le) * 0.15
+                    gst_payable = tv * 0.15
+                    net_gst = gst_payable - gst_claimable
+                    
+                    gross_profit = tv - pp - rb - le - cr - ins - com - int_cost
+                    pre_tax_profit = gross_profit - net_gst
+                    post_tax_profit = pre_tax_profit * 0.67  # 33% tax
+                    
+                    is_viable = post_tax_profit >= 25000
+                    recommended_pp = None
+                    if not is_viable:
+                        # Simple recommendation
+                        recommended_pp = tv * 0.6  # 60% of target value
+                    
+                    return {
+                        'pp': round(pp, 2),
+                        'tv': round(tv, 2),
+                        'rv': round(rv or tv * 0.9, 2),
+                        'cv': round(cv or tv * 0.9, 2),
+                        'rb': round(rb, 2),
+                        'ins': round(ins, 2),
+                        'le': round(le, 2),
+                        'cr': round(cr, 2),
+                        'com': round(com, 2),
+                        'int': round(int_cost, 2),
+                        'int_rate': round(int_rate * 100, 2),
+                        'renovation_months': renovation_months,
+                        'gst_claimable': round(gst_claimable, 2),
+                        'gst_payable': round(gst_payable, 2),
+                        'net_gst': round(net_gst, 2),
+                        'gross_profit': round(gross_profit, 2),
+                        'pre_tax_profit': round(pre_tax_profit, 2),
+                        'post_tax_profit': round(post_tax_profit, 2),
+                        'is_viable': is_viable,
+                        'recommended_pp': round(recommended_pp, 2) if recommended_pp else None
+                    }
+            
+            calculator = FallbackCalculator()
         
         # Format results for frontend - match with original properties
         analysis_results = []
-        for i, result in enumerate(results):
-            # Find the corresponding property by address
-            matching_property = None
-            for prop in properties:
-                if prop.get('address', '').strip() == result.address.strip():
-                    matching_property = prop
-                    break
-            
-            # If no exact match, use the property at the same index
-            if not matching_property and i < len(properties):
-                matching_property = properties[i]
-            
-            # Extract financial data from the analysis result
-            connection_data = result.connection_data.dict() if result.connection_data else {}
-            property_valuation = connection_data.get('property_valuation', {})
-            
-            # Get property values for financial calculations
-            asking_price = matching_property.get('asking_price', 0) if matching_property else 0
-            if isinstance(asking_price, str):
-                asking_price = asking_price.replace('$', '').replace(',', '').replace('Asking ', '').strip()
-                try:
-                    asking_price = float(asking_price) if asking_price else 0
-                except:
-                    asking_price = 0
-            
-            # Use current valuation as target value, fallback to asking price
-            target_value = property_valuation.get('current_valuation', asking_price * 1.1)
-            if not target_value:
-                target_value = asking_price * 1.1
-            
-            # Use 85% of asking price as purchase price
-            purchase_price = asking_price * 0.85 if asking_price > 0 else 0
-            
-            # Perform financial calculations
-            try:
-                calc_result = calculator.calculate(
-                    pp=purchase_price,
-                    tv=target_value,
-                    rv=property_valuation.get('current_valuation'),
-                    cv=property_valuation.get('current_valuation')
-                )
+        try:
+            for i, result in enumerate(results):
+                # Find the corresponding property by address
+                matching_property = None
+                for prop in properties:
+                    if prop.get('address', '').strip() == result.address.strip():
+                        matching_property = prop
+                        break
                 
-                # Create analysis result with financial data
-                analysis_data = {
-                    "score": result.score,
-                    "notes": result.notes,
-                    "scoring_breakdown": result.scoring_breakdown.dict() if result.scoring_breakdown else None,
-                    "connection_data": result.connection_data.dict() if result.connection_data else None,
-                    # Financial calculation fields
-                    "purchase_price": calc_result.get('pp', 0),
-                    "rateable_value": calc_result.get('rv', 0),
-                    "capital_value": calc_result.get('cv', 0),
-                    "target_value": calc_result.get('tv', 0),
-                    "renovation_budget": calc_result.get('rb', 0),
-                    "insurance": calc_result.get('ins', 0),
-                    "legal_expenses": calc_result.get('le', 0),
-                    "council_rates": calc_result.get('cr', 0),
-                    "commission": calc_result.get('com', 0),
-                    "interest_cost": calc_result.get('int', 0),
-                    "interest_rate": calc_result.get('int_rate', 0),
-                    "renovation_period": calc_result.get('renovation_months', 0),
-                    "gst_claimable": calc_result.get('gst_claimable', 0),
-                    "gst_payable": calc_result.get('gst_payable', 0),
-                    "net_gst": calc_result.get('net_gst', 0),
-                    "gross_profit": calc_result.get('gross_profit', 0),
-                    "pre_tax_profit": calc_result.get('pre_tax_profit', 0),
-                    "post_tax_profit": calc_result.get('post_tax_profit', 0),
-                    "recommended_pp": calc_result.get('recommended_pp', 0),
-                    "is_viable": calc_result.get('is_viable', False)
-                }
-            except Exception as e:
-                logging.error(f"Financial calculation error for {result.address}: {e}")
-                # Fallback to basic analysis without financial data
-                analysis_data = {
-                    "score": result.score,
-                    "notes": result.notes,
-                    "scoring_breakdown": result.scoring_breakdown.dict() if result.scoring_breakdown else None,
-                    "connection_data": result.connection_data.dict() if result.connection_data else None,
-                    "purchase_price": 0,
-                    "rateable_value": 0,
-                    "capital_value": 0,
-                    "target_value": 0,
-                    "renovation_budget": 0,
-                    "insurance": 0,
-                    "legal_expenses": 0,
-                    "council_rates": 0,
-                    "commission": 0,
-                    "interest_cost": 0,
-                    "interest_rate": 0,
-                    "renovation_period": 0,
-                    "gst_claimable": 0,
-                    "gst_payable": 0,
-                    "net_gst": 0,
-                    "gross_profit": 0,
-                    "pre_tax_profit": 0,
-                    "post_tax_profit": 0,
-                    "recommended_pp": 0,
-                    "is_viable": False
-                }
-            
-            analysis_results.append({
-                "property": matching_property or {
-                    "id": i + 1,
-                    "address": result.address,
-                    "suburb": "",
-                    "bedrooms": None,
-                    "bathrooms": None,
-                    "floor_area": None,
-                    "asking_price": None,
-                    "sale_method": "",
-                    "trademe_url": ""
-                },
-                "analysis": analysis_data,
-                "valuation": {
-                    "source": "analysis",
-                    "score": result.score
-                }
-            })
+                # If no exact match, use the property at the same index
+                if not matching_property and i < len(properties):
+                    matching_property = properties[i]
+                
+                # Extract financial data from the analysis result
+                connection_data = result.connection_data.dict() if result.connection_data else {}
+                property_valuation = connection_data.get('property_valuation', {})
+                
+                # Get property values for financial calculations
+                asking_price = matching_property.get('asking_price', 0) if matching_property else 0
+                if isinstance(asking_price, str):
+                    asking_price = asking_price.replace('$', '').replace(',', '').replace('Asking ', '').strip()
+                    try:
+                        asking_price = float(asking_price) if asking_price else 0
+                    except:
+                        asking_price = 0
+                
+                # Use current valuation as target value, fallback to asking price
+                target_value = property_valuation.get('current_valuation', asking_price * 1.1)
+                if not target_value:
+                    target_value = asking_price * 1.1
+                
+                # Use 85% of asking price as purchase price
+                purchase_price = asking_price * 0.85 if asking_price > 0 else 0
+                
+                # Perform financial calculations
+                try:
+                    logging.info(f"Calculating finances for {result.address}: PP={purchase_price}, TV={target_value}")
+                    calc_result = calculator.calculate(
+                        pp=purchase_price,
+                        tv=target_value,
+                        rv=property_valuation.get('current_valuation'),
+                        cv=property_valuation.get('current_valuation')
+                    )
+                    logging.info(f"Calculation result: {calc_result}")
+                    
+                    # Create analysis result with financial data
+                    analysis_data = {
+                        "score": result.score,
+                        "notes": result.notes,
+                        "scoring_breakdown": result.scoring_breakdown.dict() if result.scoring_breakdown else None,
+                        "connection_data": result.connection_data.dict() if result.connection_data else None,
+                        # Financial calculation fields
+                        "purchase_price": calc_result.get('pp', 0),
+                        "rateable_value": calc_result.get('rv', 0),
+                        "capital_value": calc_result.get('cv', 0),
+                        "target_value": calc_result.get('tv', 0),
+                        "renovation_budget": calc_result.get('rb', 0),
+                        "insurance": calc_result.get('ins', 0),
+                        "legal_expenses": calc_result.get('le', 0),
+                        "council_rates": calc_result.get('cr', 0),
+                        "commission": calc_result.get('com', 0),
+                        "interest_cost": calc_result.get('int', 0),
+                        "interest_rate": calc_result.get('int_rate', 0),
+                        "renovation_period": calc_result.get('renovation_months', 0),
+                        "gst_claimable": calc_result.get('gst_claimable', 0),
+                        "gst_payable": calc_result.get('gst_payable', 0),
+                        "net_gst": calc_result.get('net_gst', 0),
+                        "gross_profit": calc_result.get('gross_profit', 0),
+                        "pre_tax_profit": calc_result.get('pre_tax_profit', 0),
+                        "post_tax_profit": calc_result.get('post_tax_profit', 0),
+                        "recommended_pp": calc_result.get('recommended_pp', 0),
+                        "is_viable": calc_result.get('is_viable', False)
+                    }
+                except Exception as e:
+                    logging.error(f"Financial calculation error for {result.address}: {e}")
+                    # Fallback to basic analysis without financial data
+                    analysis_data = {
+                        "score": result.score,
+                        "notes": result.notes,
+                        "scoring_breakdown": result.scoring_breakdown.dict() if result.scoring_breakdown else None,
+                        "connection_data": result.connection_data.dict() if result.connection_data else None,
+                        "purchase_price": 0,
+                        "rateable_value": 0,
+                        "capital_value": 0,
+                        "target_value": 0,
+                        "renovation_budget": 0,
+                        "insurance": 0,
+                        "legal_expenses": 0,
+                        "council_rates": 0,
+                        "commission": 0,
+                        "interest_cost": 0,
+                        "interest_rate": 0,
+                        "renovation_period": 0,
+                        "gst_claimable": 0,
+                        "gst_payable": 0,
+                        "net_gst": 0,
+                        "gross_profit": 0,
+                        "pre_tax_profit": 0,
+                        "post_tax_profit": 0,
+                        "recommended_pp": 0,
+                        "is_viable": False
+                    }
+                
+                analysis_results.append({
+                    "property": matching_property or {
+                        "id": i + 1,
+                        "address": result.address,
+                        "suburb": "",
+                        "bedrooms": None,
+                        "bathrooms": None,
+                        "floor_area": None,
+                        "asking_price": None,
+                        "sale_method": "",
+                        "trademe_url": ""
+                    },
+                    "analysis": analysis_data,
+                    "valuation": {
+                        "source": "analysis",
+                        "score": result.score
+                    }
+                })
+        except Exception as e:
+            logging.error(f"Error processing analysis results: {e}")
+            raise HTTPException(status_code=500, detail=f"Analysis processing failed: {str(e)}")
         
         return {
             "success": True,
