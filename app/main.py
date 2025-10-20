@@ -44,8 +44,8 @@ async def health_check():
 async def upload_csv(file: UploadFile = File(...)):
     """Upload and process CSV file with property data"""
     try:
-        # Log the upload attempt
-        logging.info(f"Upload attempt: filename={file.filename}, content_type={file.content_type}")
+        # Log the upload attempt with more details
+        logging.info(f"Upload attempt: filename={file.filename}, content_type={file.content_type}, size={file.size}")
         
         # Check if file is provided
         if not file.filename:
@@ -64,21 +64,30 @@ async def upload_csv(file: UploadFile = File(...)):
         if len(content) == 0:
             raise HTTPException(status_code=400, detail="File is empty")
         
-        # Parse CSV content
+        # Parse CSV content with better error handling
         try:
             buf = io.StringIO(content.decode("utf-8", errors="ignore"))
-            reader = csv.reader(buf)
+            reader = csv.reader(buf, quoting=csv.QUOTE_ALL, skipinitialspace=True)
             rows = list(reader)
+            # Filter out empty rows
+            rows = [row for row in rows if any(cell.strip() for cell in row)]
         except Exception as e:
             logging.error(f"CSV parsing error: {str(e)}")
             raise HTTPException(status_code=400, detail=f"Failed to parse CSV: {str(e)}")
 
         if not rows:
             logging.warning("No data found in file")
-            return {"properties": [], "message": "No data found in file"}
+            return {
+                "success": True,
+                "properties": [], 
+                "count": 0,
+                "total": 0,
+                "message": "No data found in file"
+            }
 
         headers = [h.strip() for h in rows[0]]
         logging.info(f"CSV headers: {headers}")
+        logging.info(f"Found {len(rows)} total rows (including header)")
         
         properties = []
         
@@ -89,9 +98,15 @@ async def upload_csv(file: UploadFile = File(...)):
             
             property_data = dict(zip(headers, row))
             properties.append(property_data)
+            logging.debug(f"Processed row {i}: {property_data}")
         
         logging.info(f"Successfully processed {len(properties)} properties")
-        return {"properties": properties, "total": len(properties)}
+        return {
+            "success": True,
+            "properties": properties, 
+            "count": len(properties),
+            "total": len(properties)
+        }
         
     except HTTPException:
         # Re-raise HTTP exceptions as-is
