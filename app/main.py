@@ -196,15 +196,43 @@ async def analyze_properties(request: Dict[str, Any]):
         # Process addresses through pipeline
         results = await process_addresses_with_urls(addresses)
         
-        # Format results for frontend
+        # Format results for frontend - match with original properties
         analysis_results = []
-        for result in results:
+        for i, result in enumerate(results):
+            # Find the corresponding property by address
+            matching_property = None
+            for prop in properties:
+                if prop.get('address', '').strip() == result.address.strip():
+                    matching_property = prop
+                    break
+            
+            # If no exact match, use the property at the same index
+            if not matching_property and i < len(properties):
+                matching_property = properties[i]
+            
+            # Create analysis result in the format expected by frontend
             analysis_results.append({
-                "address": result.address,
-                "score": result.score,
-                "notes": result.notes,
-                "scoring_breakdown": result.scoring_breakdown.dict() if result.scoring_breakdown else None,
-                "connection_data": result.connection_data.dict() if result.connection_data else None
+                "property": matching_property or {
+                    "id": i + 1,
+                    "address": result.address,
+                    "suburb": "",
+                    "bedrooms": None,
+                    "bathrooms": None,
+                    "floor_area": None,
+                    "asking_price": None,
+                    "sale_method": "",
+                    "trademe_url": ""
+                },
+                "analysis": {
+                    "score": result.score,
+                    "notes": result.notes,
+                    "scoring_breakdown": result.scoring_breakdown.dict() if result.scoring_breakdown else None,
+                    "connection_data": result.connection_data.dict() if result.connection_data else None
+                },
+                "valuation": {
+                    "source": "analysis",
+                    "score": result.score
+                }
             })
         
         return {

@@ -24,15 +24,17 @@ function PropertyList({ properties, loading: parentLoading }) {
 
     try {
       const response = await analyzeProperties(properties);
+      console.log('Analysis response:', response); // Debug logging
 
-      if (response.success) {
-        setAnalysisResults(response.results);
+      if (response && response.success) {
+        setAnalysisResults(response.results || []);
         setAnalyzed(true);
       } else {
-        setError(response.error || 'Failed to analyze properties');
+        setError(response?.error || 'Failed to analyze properties');
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'An error occurred during analysis');
+      console.error('Analysis error:', err); // Debug logging
+      setError(err.response?.data?.error || err.message || 'An error occurred during analysis');
     } finally {
       setAnalyzing(false);
     }
@@ -91,9 +93,9 @@ function PropertyList({ properties, loading: parentLoading }) {
       )}
 
       <Grid container spacing={3}>
-        {analyzed ? (
-          analysisResults.map((result) => (
-            <Grid item xs={12} key={result.property.id}>
+        {analyzed && analysisResults && analysisResults.length > 0 ? (
+          analysisResults.map((result, index) => (
+            <Grid item xs={12} key={result.property?.id || index}>
               <PropertyCard
                 property={result.property}
                 analysis={result.analysis}
@@ -102,8 +104,8 @@ function PropertyList({ properties, loading: parentLoading }) {
             </Grid>
           ))
         ) : (
-          properties.map((property) => (
-            <Grid item xs={12} key={property.id}>
+          properties.map((property, index) => (
+            <Grid item xs={12} key={property.id || index}>
               <PropertyCard property={property} />
             </Grid>
           ))
