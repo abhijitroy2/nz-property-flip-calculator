@@ -8,11 +8,11 @@ const api = axios.create({
 });
 
 
-export const analyzeProperties = async (propertyIds) => {
+export const analyzeProperties = async (properties) => {
   try {
     const response = await api.post(
       '/analyze',
-      { property_ids: propertyIds },
+      { properties: properties },
       { headers: { 'Content-Type': 'application/json' } }
     );
     return response.data;

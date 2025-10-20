@@ -23,8 +23,7 @@ function PropertyList({ properties, loading: parentLoading }) {
     setError(null);
 
     try {
-      const propertyIds = properties.map((p) => p.id);
-      const response = await analyzeProperties(propertyIds);
+      const response = await analyzeProperties(properties);
 
       if (response.success) {
         setAnalysisResults(response.results);

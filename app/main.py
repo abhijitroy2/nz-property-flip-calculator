@@ -207,7 +207,11 @@ async def analyze_properties(request: Dict[str, Any]):
                 "connection_data": result.connection_data.dict() if result.connection_data else None
             })
         
-        return {"results": analysis_results, "total": len(analysis_results)}
+        return {
+            "success": True,
+            "results": analysis_results, 
+            "total": len(analysis_results)
+        }
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")

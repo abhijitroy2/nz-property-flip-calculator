@@ -1,0 +1,123 @@
+{
+  "info": {
+    "name": "NZ Property Flip Calculator",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "d3c7f4a4-5e7c-4d1e-8b8a-1234567890ab"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Upload CSV",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": []
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/upload",
+          "host": [
+            "{{baseUrl}}"
+          ],
+        "path": [
+            "api",
+            "upload"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Analyze Properties",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"properties\": [\n    { \n      \"address\": \"123 Queen Street, Auckland\",\n      \"trademe_url\": \"https://www.trademe.co.nz/a/property/residential/sale/auckland/auckland-city/cbd/listing/1234567890\"\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/analyze",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "analyze"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Property",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/property/{{propertyId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "property",
+            "{{propertyId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Analysis",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/analysis/{{propertyId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "analysis",
+            "{{propertyId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "" },
+    { "key": "propertyId", "value": "123" }
+  ]
+}
