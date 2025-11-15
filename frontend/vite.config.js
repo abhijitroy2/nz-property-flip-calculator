@@ -27,6 +27,6 @@ export default defineConfig({
   define: {
     global: 'globalThis',
   },
-  // Ensure proper base path for Railway deployment
+  // Base path for deployment
   base: '/',
 })

@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend application code
 COPY backend/ .
 
-# Expose port (Railway will provide PORT env var)
+# Expose port (PORT env var provided by deployment platform)
 EXPOSE 5000
 
 # Run the application with gunicorn

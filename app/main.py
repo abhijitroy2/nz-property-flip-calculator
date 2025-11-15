@@ -36,7 +36,7 @@ async def index(request: Request):
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint for Railway"""
+    """Health check endpoint"""
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
 
 # API Routes for React frontend

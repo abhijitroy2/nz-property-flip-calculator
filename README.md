@@ -23,7 +23,7 @@ A comprehensive web application for analyzing New Zealand property flipping oppo
 - **Frontend**: React 18 with Material-UI 5
 - **Database**: PostgreSQL
 - **Scraping**: BeautifulSoup4, Selenium with polite rate limiting
-- **Deployment**: Railway (live production instance available)
+- **Deployment**: Docker/Cloud deployment ready
 
 ## Prerequisites
 
@@ -96,7 +96,6 @@ python run.py
 # Backend will run on http://localhost:5000
 ```
 
-**Note**: The application is also deployed on Railway at: https://nz-property-flip-calculator-production.up.railway.app/
 
 ### Start Frontend Development Server
 
