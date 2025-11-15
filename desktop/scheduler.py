@@ -4,10 +4,10 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 
-from .config import ScheduleConfig
+from desktop.config import ScheduleConfig
 
 
-class JobScheduler:
+class Scheduler:
     def __init__(self) -> None:
         self.scheduler = BackgroundScheduler()
         self.started = False
@@ -29,6 +29,12 @@ class JobScheduler:
             )
         else:
             trig = IntervalTrigger(minutes=max(1, int(schedule.minutes or 60)))
+        self.scheduler.add_job(func, trig, id="batch-run")
+
+    def schedule_interval(self, minutes: int, func: Callable[[], None]) -> None:
+        """Schedule a function to run at regular intervals."""
+        self.scheduler.remove_all_jobs()
+        trig = IntervalTrigger(minutes=max(1, minutes))
         self.scheduler.add_job(func, trig, id="batch-run")
 
     def shutdown(self) -> None:

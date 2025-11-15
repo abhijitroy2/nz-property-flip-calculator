@@ -69,3 +69,54 @@ def html_to_pdf(html: str, output_dir: str) -> str:
         return path
 
 
+class PDFRenderer:
+    """PDF renderer for desktop app."""
+    
+    def __init__(self):
+        pass
+        
+    def render_html_to_pdf(self, html: str, output_path: str) -> bool:
+        """Render HTML to PDF file."""
+        try:
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            # Try WeasyPrint first
+            try:
+                from weasyprint import HTML
+                HTML(string=html).write_pdf(output_path)
+                return True
+            except ImportError:
+                # Fallback to HTML file
+                html_path = output_path.replace('.pdf', '.html')
+                with open(html_path, 'w', encoding='utf-8') as f:
+                    f.write(html)
+                return False
+        except Exception as e:
+            print(f"PDF rendering failed: {e}")
+            return False
+            
+    def render_results_to_pdf(self, results: Dict[str, Any], output_dir: str) -> str:
+        """Render analysis results to PDF."""
+        try:
+            import datetime as dt
+            
+            # Generate HTML
+            html = render_html(results)
+            
+            # Create timestamped filename
+            ts = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
+            pdf_path = os.path.join(output_dir, f"Analysis_{ts}.pdf")
+            
+            # Convert to PDF
+            success = self.render_html_to_pdf(html, pdf_path)
+            
+            if success:
+                return pdf_path
+            else:
+                # Return HTML path if PDF failed
+                return pdf_path.replace('.pdf', '.html')
+                
+        except Exception as e:
+            print(f"Results rendering failed: {e}")
+            return ""
+
+

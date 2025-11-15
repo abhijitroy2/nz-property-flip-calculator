@@ -4,7 +4,7 @@ import json
 import os
 from typing import List, Dict, Any
 
-from .config import AppConfig
+from desktop.config import DesktopConfig
 
 
 def _read_csv_rows(path: str) -> List[Dict[str, str]]:
@@ -47,7 +47,7 @@ def _map_row_to_property(raw: Dict[str, str], idx: int) -> Dict[str, Any]:
     }
 
 
-def run_batch(cfg: AppConfig, csv_paths: List[str]) -> Dict[str, Any]:
+def run_batch(cfg: DesktopConfig, csv_paths: List[str]) -> Dict[str, Any]:
     """Run a batch analysis and return a results dict.
 
     Note: We reuse the analysis pipeline via app modules. Imports are placed
@@ -101,5 +101,48 @@ def write_json(output_dir: str, payload: Dict[str, Any]) -> str:
     with open(path, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
     return path
+
+
+class BatchRunner:
+    """Main batch runner class for desktop app."""
+    
+    def __init__(self, config: DesktopConfig):
+        self.config = config
+        
+    def run_analysis(self) -> bool:
+        """Run a complete analysis batch and return success status."""
+        try:
+            # Get CSV paths from config
+            csv_paths = self.config.csv_paths
+            if not csv_paths:
+                print("No CSV paths configured")
+                return False
+                
+            # Run batch analysis
+            results = run_batch(self.config, csv_paths)
+            
+            # Write JSON results
+            json_path = write_json(self.config.output_dir, results)
+            print(f"Results written to: {json_path}")
+            
+            # Generate PDF report
+            from desktop.pdf_renderer import PDFRenderer
+            renderer = PDFRenderer()
+            pdf_path = renderer.render_results_to_pdf(results, self.config.output_dir)
+            if pdf_path:
+                print(f"PDF report written to: {pdf_path}")
+            
+            # Send email if enabled
+            if self.config.email.enabled and self.config.email.recipients:
+                from desktop.email_sender import EmailSender
+                sender = EmailSender(self.config)
+                if pdf_path:
+                    sender.send_report_email(pdf_path, json_path)
+            
+            return True
+            
+        except Exception as e:
+            print(f"Analysis failed: {e}")
+            return False
 
 

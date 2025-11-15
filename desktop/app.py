@@ -4,39 +4,38 @@ import sys
 import threading
 from typing import List
 
-from .config import load_config, save_config, AppConfig, CONFIG_PATH
-from .runner import run_batch, write_json
-from .pdf_renderer import render_html, html_to_pdf
-from .email_sender import send_email
-from .scheduler import JobScheduler
+from desktop.config import load_config, save_config, DesktopConfig, CONFIG_PATH
+from desktop.runner import BatchRunner
+from desktop.scheduler import Scheduler
 
 
-def _run_once(cfg: AppConfig) -> List[str]:
-    payload = run_batch(cfg, cfg.csv_paths)
-    html = render_html(payload)
-    out_dir = cfg.output_dir
-    pdf_path = html_to_pdf(html, out_dir)
-    json_path = write_json(out_dir, payload)
-    if cfg.email.enabled and cfg.email.recipients:
-        send_email(cfg.email, "RealFlip Analysis Report", "Please find the attached report.", [pdf_path])
-    return [pdf_path, json_path]
+def _run_once(cfg: DesktopConfig) -> bool:
+    """Run a single batch analysis."""
+    runner = BatchRunner(cfg)
+    return runner.run_analysis()
 
 
 def cli_main(argv: List[str]) -> int:
     parser = argparse.ArgumentParser(description="RealFlip Desktop Batch Analyzer")
     parser.add_argument("--run-once", action="store_true", help="Run a single batch now and exit")
     parser.add_argument("--show-config-path", action="store_true", help="Print the config file path and exit")
+    
+    # Check for help first
+    if "--help" in argv or "-h" in argv:
+        parser.print_help()
+        return 0
+    
+    # Parse args
     args = parser.parse_args(argv)
 
     if args.show_config_path:
         print(CONFIG_PATH)
         return 0
 
-    cfg = load_config()
-
-    if args.run-once:
-        _run_once(cfg)
-        return 0
+    if args.run_once:
+        cfg = load_config()
+        success = _run_once(cfg)
+        return 0 if success else 1
 
     # Minimal settings UI using Tkinter (only for schedule & paths)
     import tkinter as tk
@@ -45,7 +44,7 @@ def cli_main(argv: List[str]) -> int:
     root = tk.Tk()
     root.title("RealFlip Batch Analyzer")
 
-    scheduler = JobScheduler()
+    scheduler = Scheduler()
 
     def select_csv():
         paths = filedialog.askopenfilenames(title="Select CSV files", filetypes=[("CSV Files", "*.csv")])
@@ -70,7 +69,7 @@ def cli_main(argv: List[str]) -> int:
         cfg.schedule.mode = "interval"
         cfg.schedule.minutes = max(1, minutes)
         save_config(cfg)
-        scheduler.schedule(cfg.schedule, lambda: _run_once(cfg))
+        scheduler.schedule_interval(cfg.schedule.minutes, lambda: _run_once(cfg))
         messagebox.showinfo("Scheduled", f"Batch set to run every {cfg.schedule.minutes} minutes")
 
     def on_run_now():
@@ -105,7 +104,7 @@ def cli_main(argv: List[str]) -> int:
 
     # Start scheduler
     scheduler.start()
-    scheduler.schedule(cfg.schedule, lambda: _run_once(cfg))
+    scheduler.schedule_interval(cfg.schedule.minutes, lambda: _run_once(cfg))
 
     root.mainloop()
     scheduler.shutdown()

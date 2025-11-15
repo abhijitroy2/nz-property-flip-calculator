@@ -54,7 +54,7 @@ class ScheduleConfig:
 
 
 @dataclass
-class AppConfig:
+class DesktopConfig:
     csv_paths: List[str] = field(default_factory=list)
     output_dir: str = os.path.join(os.path.expanduser("~"), "Documents", "RealFlipReports")
     schedule: ScheduleConfig = field(default_factory=ScheduleConfig)
@@ -65,11 +65,11 @@ class AppConfig:
         return json.dumps(asdict(self), indent=2)
 
     @staticmethod
-    def from_json(s: str) -> "AppConfig":
+    def from_json(s: str) -> "DesktopConfig":
         data = json.loads(s or "{}")
         email = EmailConfig(**data.get("email", {}))
         schedule = ScheduleConfig(**data.get("schedule", {}))
-        return AppConfig(
+        return DesktopConfig(
             csv_paths=data.get("csv_paths", []),
             output_dir=data.get("output_dir", os.path.join(os.path.expanduser("~"), "Documents", "RealFlipReports")),
             schedule=schedule,
@@ -78,16 +78,16 @@ class AppConfig:
         )
 
 
-def load_config() -> AppConfig:
+def load_config() -> DesktopConfig:
     if not os.path.exists(CONFIG_PATH):
-        cfg = AppConfig()
+        cfg = DesktopConfig()
         save_config(cfg)
         return cfg
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:
-        return AppConfig.from_json(f.read())
+        return DesktopConfig.from_json(f.read())
 
 
-def save_config(cfg: AppConfig) -> None:
+def save_config(cfg: DesktopConfig) -> None:
     os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
     with open(CONFIG_PATH, "w", encoding="utf-8") as f:
         f.write(cfg.to_json())
